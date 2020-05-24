@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm") version "1.4-M1"
 }
@@ -12,16 +14,24 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.6")
+
+    fun kotest(artifact: String): String = "io.kotest:$artifact:4.0.5"
+
+    testImplementation(kotest("kotest-runner-junit5-jvm"))
+    testImplementation(kotest("kotest-assertions-core-jvm"))
+    testImplementation(kotest("kotest-property-jvm"))
 }
 
-kotlin {
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
 
-}
-tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs = listOf("-Xinline-classes")
     }
 }
+
+
