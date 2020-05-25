@@ -1,7 +1,7 @@
 package com.omricat.androidxdash
 
-object ModelsTestData {
-    val androidXUiGroupXml = """<?xml version='1.0' encoding='UTF-8'?>
+object TestData {
+    const val androidXUiGroupXml = """<?xml version='1.0' encoding='UTF-8'?>
 <androidx.ui>
   <ui-android-text versions="0.1.0-dev01,0.1.0-dev02,0.1.0-dev03,0.1.0-dev04,0.1.0-dev05,0.1.0-dev06,0.1.0-dev07,0.1.0-dev08"/>
   <ui-animation versions="0.1.0-dev01,0.1.0-dev02,0.1.0-dev03,0.1.0-dev04,0.1.0-dev05,0.1.0-dev06,0.1.0-dev07,0.1.0-dev08,0.1.0-dev09,0.1.0-dev10,0.1.0-dev11"/>
@@ -29,4 +29,19 @@ object ModelsTestData {
   <ui-vector versions="0.1.0-dev01,0.1.0-dev02,0.1.0-dev03,0.1.0-dev04,0.1.0-dev05,0.1.0-dev06,0.1.0-dev07,0.1.0-dev08,0.1.0-dev09,0.1.0-dev10,0.1.0-dev11"/>
 </androidx.ui>
 """
+
+    const val groupsXml =
+        """<?xml version="1.0" encoding="UTF-8"?>
+                <metadata>
+                <com.android.support.constraint/>
+                <com.android.databinding/>
+                <com.android.support/>
+                </metadata>
+                """
+
+    const val emptyGroupsListXml = """<?xml version="1.0" encoding="UTF-8"?>
+                <metadata>
+                </metadata>
+                """
+
 }

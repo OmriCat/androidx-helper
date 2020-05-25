@@ -11,30 +11,16 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 
-internal val groupsXml =
-    """<?xml version="1.0" encoding="UTF-8"?>
-                <metadata>
-                <com.android.support.constraint/>
-                <com.android.databinding/>
-                <com.android.support/>
-                </metadata>
-                """.trimIndent()
-
-internal val emptyGroupsListXml = """<?xml version="1.0" encoding="UTF-8"?>
-                <metadata>
-                </metadata>
-                """.trimIndent()
-
 internal class ModelsTest : StringSpec({
 
     "GroupsDoc#fromString should parse empty list" {
-        GroupsDoc.parseFromString(emptyGroupsListXml).shouldBeOk {
+        GroupsDoc.parseFromString(TestData.emptyGroupsListXml).shouldBeOk {
             it.groups.shouldBeEmpty()
         }
     }
 
     "GroupsDoc#fromString should parse real xml" {
-        GroupsDoc.parseFromString(groupsXml).shouldBeOk {
+        GroupsDoc.parseFromString(TestData.groupsXml).shouldBeOk {
             it.groups.shouldContainExactly(
                 GroupName("com.android.support.constraint"),
                 GroupName("com.android.databinding"),
@@ -45,7 +31,7 @@ internal class ModelsTest : StringSpec({
 
     "Group#fromString should parse real data" {
 
-        Group.parseFromString(ModelsTestData.androidXUiGroupXml).shouldBeOk {
+        Group.parseFromString(TestData.androidXUiGroupXml).shouldBeOk {
             it.name.shouldBe(GroupName("androidx.ui"))
             it.artifacts.size.shouldBe(24)
             val expectedUiLivedataVersions = listOf("0.1.0-dev09","0.1.0-dev10","0.1.0-dev11").map(::Version)

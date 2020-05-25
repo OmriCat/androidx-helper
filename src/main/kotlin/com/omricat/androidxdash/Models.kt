@@ -6,7 +6,9 @@ import com.omricat.document
 import org.w3c.dom.Document
 
 
-inline class GroupName(val name: String)
+data class GroupName(val name: String)
+
+fun GroupName.asPath() = name.replace(oldValue = ".", newValue = "/")
 
 inline class Artifact(val name: String)
 
@@ -21,7 +23,6 @@ data class GroupsDoc(private val document: Document) {
             }
             .map { GroupName(it.nodeName) }
             .toSet()
-
     companion object {
         fun parseFromString(string: String): Result<GroupsDoc, ParseError> = document(string)
             .mapError { ParseError(it.message ?: "Unknown error", string) }
@@ -31,16 +32,16 @@ data class GroupsDoc(private val document: Document) {
                 else
                     Err(ParseError("Missing metadata root element", string))
             }
+
     }
-
     data class ParseError(val message: String, val input: String)
-}
 
+}
 data class Group(val name: GroupName, val artifactsToVersions: Map<Artifact, List<Version>>) {
+
     val artifacts: Set<Artifact> get() = artifactsToVersions.keys
 
     operator fun get(artifact: Artifact): List<Version> = artifactsToVersions[artifact] ?: emptyList()
-
     companion object {
         fun parseFromString(string: String): Result<Group, ParseError> = document(string)
             .mapError { ParseError(it.message ?: "Unknown error", string) }
@@ -53,8 +54,8 @@ data class Group(val name: GroupName, val artifactsToVersions: Map<Artifact, Lis
                     }.toMap()
                 Ok(Group(GroupName(doc.documentElement.tagName), artifacts))
             }
+
     }
-
     data class ParseError(val message: String, val input: String)
-}
 
+}
