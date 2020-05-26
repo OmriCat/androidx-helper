@@ -14,15 +14,16 @@ inline class Artifact(val name: String)
 
 inline class Version(val versionString: String)
 
-data class GroupsDoc(private val document: Document) {
+class GroupsDoc(document: Document) {
 
-    val groups: Set<GroupName>
-        get() = document.documentElement.run {
+    val groups: Set<GroupName> =
+        document.documentElement.run {
                 normalize()
                 childNodes.asElementList()
             }
             .map { GroupName(it.nodeName) }
             .toSet()
+
     companion object {
         fun parseFromString(string: String): Result<GroupsDoc, ParseError> = document(string)
             .mapError { ParseError(it.message ?: "Unknown error", string) }
@@ -34,14 +35,17 @@ data class GroupsDoc(private val document: Document) {
             }
 
     }
+
     data class ParseError(val message: String, val input: String)
 
 }
+
 data class Group(val name: GroupName, val artifactsToVersions: Map<Artifact, List<Version>>) {
 
     val artifacts: Set<Artifact> get() = artifactsToVersions.keys
 
     operator fun get(artifact: Artifact): List<Version> = artifactsToVersions[artifact] ?: emptyList()
+
     companion object {
         fun parseFromString(string: String): Result<Group, ParseError> = document(string)
             .mapError { ParseError(it.message ?: "Unknown error", string) }
@@ -56,6 +60,7 @@ data class Group(val name: GroupName, val artifactsToVersions: Map<Artifact, Lis
             }
 
     }
+
     data class ParseError(val message: String, val input: String)
 
 }
