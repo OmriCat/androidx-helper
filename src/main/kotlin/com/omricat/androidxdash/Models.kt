@@ -6,7 +6,7 @@ import com.omricat.document
 import org.w3c.dom.Document
 
 
-data class GroupName(val name: String)
+data class GroupName(val name: String): CharSequence by name
 
 fun GroupName.asPath() = name.replace(oldValue = ".", newValue = "/")
 
@@ -14,7 +14,7 @@ inline class Artifact(val name: String)
 
 inline class Version(val versionString: String)
 
-class GroupsDoc(document: Document) {
+class Groups(document: Document) {
 
     val groups: Set<GroupName> =
         document.documentElement.run {
@@ -25,11 +25,11 @@ class GroupsDoc(document: Document) {
             .toSet()
 
     companion object {
-        fun parseFromString(string: String): Result<GroupsDoc, ParseError> = document(string)
+        fun parseFromString(string: String): Result<Groups, ParseError> = document(string)
             .mapError { ParseError(it.message ?: "Unknown error", string) }
             .flatMap { document ->
                 if (document.documentElement.tagName == "metadata")
-                    Ok(GroupsDoc(document))
+                    Ok(Groups(document))
                 else
                     Err(ParseError("Missing metadata root element", string))
             }

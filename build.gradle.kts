@@ -18,6 +18,7 @@ dependencies {
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.6")
 
     implementation("io.reactivex.rxjava3:rxjava:3.0.3")
+    implementation("io.reactivex.rxjava3:rxkotlin:3.0.0")
 
     fun retrofit(artifact: String) = "com.squareup.retrofit2:$artifact:2.9.0"
 

@@ -3,7 +3,7 @@ package com.omricat.androidxdash.converters
 import com.github.michaelbull.result.Result
 import com.omricat.androidxdash.Group
 import com.omricat.androidxdash.GroupName
-import com.omricat.androidxdash.GroupsDoc
+import com.omricat.androidxdash.Groups
 import com.omricat.androidxdash.asPath
 import okhttp3.ResponseBody
 import retrofit2.Converter
@@ -22,7 +22,7 @@ object ConvertersFactory : Converter.Factory() {
         ?.let {
             when (it.actualTypeArguments[0]) {
                 Group::class.java -> GroupConverter()
-                GroupsDoc::class.java -> GroupsDocConverter()
+                Groups::class.java -> GroupsDocConverter()
                 else -> null
             }
         }
@@ -42,8 +42,8 @@ class GroupConverter : Converter<ResponseBody, Result<Group, *>> {
     override fun convert(body: ResponseBody): Result<Group, *> = Group.parseFromString(body.string())
 }
 
-class GroupsDocConverter : Converter<ResponseBody, Result<GroupsDoc, *>> {
-    override fun convert(body: ResponseBody): Result<GroupsDoc, *> = GroupsDoc.parseFromString(body.string())
+class GroupsDocConverter : Converter<ResponseBody, Result<Groups, *>> {
+    override fun convert(body: ResponseBody): Result<Groups, *> = Groups.parseFromString(body.string())
 }
 
 class GroupNameConverter : Converter<GroupName, String> {

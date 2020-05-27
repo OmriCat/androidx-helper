@@ -13,14 +13,14 @@ import io.kotest.matchers.shouldBe
 
 internal class ModelsTest : StringSpec({
 
-    "GroupsDoc#fromString should parse empty list" {
-        GroupsDoc.parseFromString(TestData.emptyGroupsListXml).shouldBeOk {
+    "Groups#fromString should parse empty list" {
+        Groups.parseFromString(TestData.emptyGroupsListXml).shouldBeOk {
             it.groups.shouldBeEmpty()
         }
     }
 
-    "GroupsDoc#fromString should parse real xml" {
-        GroupsDoc.parseFromString(TestData.groupsXml).shouldBeOk {
+    "Groups#fromString should parse real xml" {
+        Groups.parseFromString(TestData.groupsXml).shouldBeOk {
             it.groups.shouldContainExactly(
                 GroupName("com.android.support.constraint"),
                 GroupName("com.android.databinding"),
