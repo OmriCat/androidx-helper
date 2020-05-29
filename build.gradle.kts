@@ -25,6 +25,11 @@ dependencies {
     implementation(retrofit("adapter-rxjava3"))
     implementation(retrofit("retrofit"))
 
+    fun tinylog(artifact: String) = "org.tinylog:tinylog-$artifact:2.1.2"
+
+    implementation(tinylog("api-kotlin"))
+    implementation(tinylog("impl"))
+
     fun kotest(artifact: String): String = "io.kotest:$artifact:4.0.5"
 
     testImplementation(kotest("kotest-runner-junit5-jvm"))
