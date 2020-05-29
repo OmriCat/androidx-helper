@@ -5,6 +5,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import io.reactivex.rxjava3.core.Scheduler
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -14,11 +15,14 @@ import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.create
 
 internal class ConvertersFactoryTest : StringSpec({
-    fun setup(): Triple<MockWebServer, GoogleMaven, Retrofit> {
+    fun setup(scheduler: Scheduler? = null): Triple<MockWebServer, GoogleMaven, Retrofit> {
         val server = MockWebServer()
+        val rxJavaCallAdapterFactory = scheduler
+            ?.let { RxJava3CallAdapterFactory.createWithScheduler(it) }
+            ?: RxJava3CallAdapterFactory.createSynchronous()
         val retrofit = Retrofit.Builder()
             .baseUrl(server.url("/"))
-            .addCallAdapterFactory(RxJava3CallAdapterFactory.createSynchronous())
+            .addCallAdapterFactory(rxJavaCallAdapterFactory)
             .addConverterFactory(ConvertersFactory)
             .build()
         return Triple(
@@ -59,8 +63,8 @@ internal class ConvertersFactoryTest : StringSpec({
             setBody(TestData.androidXUiGroupXml)
         }
 
-        server.dispatcher = object :Dispatcher() {
-            override fun dispatch(request: RecordedRequest): MockResponse = when(request.path) {
+        server.dispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse = when (request.path) {
                 "/androidx/ui/group-index.xml" -> response
                 else -> MockResponse().setResponseCode(404)
             }
