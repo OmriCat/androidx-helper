@@ -15,6 +15,9 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
+    implementation(androidX.arch.core.common(""))
+    implementation(androidX.arch.core.core(""))
+
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.6")
 
     implementation("io.reactivex.rxjava3:rxjava:3.0.3")
