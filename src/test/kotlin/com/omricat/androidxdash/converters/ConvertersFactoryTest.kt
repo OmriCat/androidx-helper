@@ -79,7 +79,7 @@ internal class ConvertersFactoryTest : StringSpec({
         ).map(::Version)
 
         testObserver.values().first().shouldBeOk {
-            it.name.shouldBe(GroupName("androidx.ui"))
+            it.groupName.shouldBe(GroupName("androidx.ui"))
             it.artifacts.shouldHaveSize(24)
             it.artifactsToVersions[Artifact("ui-text-core")]
                 .shouldContainExactly(expectedGroups)

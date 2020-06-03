@@ -30,6 +30,8 @@ dependencies {
     implementation(tinylog("api-kotlin"))
     implementation(tinylog("impl"))
 
+    implementation("com.squareup:kotlinpoet:1.5.0")
+
     fun kotest(artifact: String): String = "io.kotest:$artifact:4.0.5"
 
     testImplementation(kotest("kotest-runner-junit5-jvm"))

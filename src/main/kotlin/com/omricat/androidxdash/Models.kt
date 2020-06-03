@@ -3,10 +3,9 @@ package com.omricat.androidxdash
 import com.github.michaelbull.result.*
 import com.omricat.asElementList
 import com.omricat.document
-import org.w3c.dom.Document
 
 
-data class GroupName(val name: String): CharSequence by name
+data class GroupName(val name: String) : CharSequence by name
 
 fun GroupName.asPath() = name.replace(oldValue = ".", newValue = "/")
 
@@ -14,22 +13,20 @@ inline class Artifact(val name: String)
 
 inline class Version(val versionString: String)
 
-class Groups(document: Document) {
-
-    val groups: Set<GroupName> =
-        document.documentElement.run {
-                normalize()
-                childNodes.asElementList()
-            }
-            .map { GroupName(it.nodeName) }
-            .toSet()
+class GroupsList private constructor(val groups: Set<GroupName>) {
 
     companion object {
-        fun parseFromString(string: String): Result<Groups, ParseError> = document(string)
+        fun parseFromString(string: String): Result<GroupsList, ParseError> = document(string)
             .mapError { ParseError(it.message ?: "Unknown error", string) }
             .flatMap { document ->
                 if (document.documentElement.tagName == "metadata")
-                    Ok(Groups(document))
+                    Ok(
+                        GroupsList(document.documentElement.run {
+                                normalize()
+                                childNodes.asElementList()
+                            }.map { GroupName(it.nodeName) }
+                            .toSet())
+                    )
                 else
                     Err(ParseError("Missing metadata root element", string))
             }
@@ -40,7 +37,7 @@ class Groups(document: Document) {
 
 }
 
-data class Group(val name: GroupName, val artifactsToVersions: Map<Artifact, List<Version>>) {
+data class Group(val groupName: GroupName, val artifactsToVersions: Map<Artifact, List<Version>>) {
 
     val artifacts: Set<Artifact> get() = artifactsToVersions.keys
 
@@ -64,3 +61,5 @@ data class Group(val name: GroupName, val artifactsToVersions: Map<Artifact, Lis
     data class ParseError(val message: String, val input: String)
 
 }
+
+data class GroupsMap(val map: Map<GroupName, Group>)

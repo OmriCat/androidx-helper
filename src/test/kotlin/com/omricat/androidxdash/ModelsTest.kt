@@ -14,13 +14,13 @@ import io.kotest.matchers.shouldBe
 internal class ModelsTest : StringSpec({
 
     "Groups#fromString should parse empty list" {
-        Groups.parseFromString(TestData.emptyGroupsListXml).shouldBeOk {
+        GroupsList.parseFromString(TestData.emptyGroupsListXml).shouldBeOk {
             it.groups.shouldBeEmpty()
         }
     }
 
     "Groups#fromString should parse real xml" {
-        Groups.parseFromString(TestData.groupsXml).shouldBeOk {
+        GroupsList.parseFromString(TestData.groupsXml).shouldBeOk {
             it.groups.shouldContainExactly(
                 GroupName("com.android.support.constraint"),
                 GroupName("com.android.databinding"),
@@ -32,7 +32,7 @@ internal class ModelsTest : StringSpec({
     "Group#fromString should parse real data" {
 
         Group.parseFromString(TestData.androidXUiGroupXml).shouldBeOk {
-            it.name.shouldBe(GroupName("androidx.ui"))
+            it.groupName.shouldBe(GroupName("androidx.ui"))
             it.artifacts.size.shouldBe(24)
             val expectedUiLivedataVersions = listOf("0.1.0-dev09","0.1.0-dev10","0.1.0-dev11").map(::Version)
             it[Artifact("ui-livedata")].shouldContainExactly(expectedUiLivedataVersions)
