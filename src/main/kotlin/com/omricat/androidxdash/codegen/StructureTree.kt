@@ -39,7 +39,7 @@ fun <S, T> Vertex<S>.map(transform: (S) -> T): Vertex<T> {
     }
 }
 
-inline class GroupPathTree(val tree: Vertex<Group>)
+inline class GroupPathTree(val root: Vertex<Group>)
 
 data class GroupHolder(val pathComponent: String, val group: Group)
 
