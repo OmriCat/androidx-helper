@@ -15,6 +15,8 @@ sealed class Vertex<out T> {
     ) : Vertex<T>()
 }
 
+fun <T> Vertex<T>.asIterableBfs(): Iterable<Vertex<T>> = Iterable {bfsIterator()}
+
 fun <T> Vertex<T>.bfsIterator(): Iterator<Vertex<T>> = object : AbstractIterator<Vertex<T>>() {
 
     val queue: Queue<Vertex<T>> = ArrayDeque(listOf(this@bfsIterator))
@@ -39,7 +41,7 @@ fun <S, T> Vertex<S>.map(transform: (S) -> T): Vertex<T> {
     }
 }
 
-inline class GroupPathTree(val root: Vertex<Group>)
+data class GroupPathTree(val root: Vertex<Group>, val packageName: String)
 
 data class GroupHolder(val pathComponent: String, val group: Group)
 
@@ -58,6 +60,6 @@ fun Collection<GroupHolder>.tree(pathComponent: String = ""): Vertex<GroupHolder
         Vertex.PathVertex(pathComponent, children)
 }
 
-fun Collection<Group>.toPathTree(): GroupPathTree =
-    GroupPathTree(map { group -> GroupHolder(group.groupName.name, group) }.tree().map { it.group })
+fun Collection<Group>.toPathTree(packageName: String): GroupPathTree =
+    GroupPathTree(map { group -> GroupHolder(group.groupName.name, group) }.tree().map { it.group }, packageName)
 

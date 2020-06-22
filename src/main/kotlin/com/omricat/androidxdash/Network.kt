@@ -46,7 +46,7 @@ fun Collection<GroupName>.getDetails(service: GoogleMaven = GoogleMaven.instance
             groupsBuffer
                 .toObservable()
                 .doOnEach { Logger.info { "Requesting $it" } }
-                .delay(50, TimeUnit.MILLISECONDS)
+                .delay(250, TimeUnit.MILLISECONDS)
                 .flatMapSingle({ groupName -> service.group(groupName) }, true)
         }, true)
         .toList()

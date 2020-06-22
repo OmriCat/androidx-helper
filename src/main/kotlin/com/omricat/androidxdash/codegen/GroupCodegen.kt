@@ -4,8 +4,6 @@ import com.omricat.androidxdash.Group
 import com.squareup.kotlinpoet.*
 import org.gradle.api.artifacts.dsl.DependencyHandler
 
-private const val packageName: String = "com.omricat.androidxhelper"
-
 private fun FileSpec.Builder.nothingToInline() = addAnnotation(
     AnnotationSpec.builder(Suppress::class)
         .addMember(CodeBlock.of("%S", "NOTHING_TO_INLINE"))
@@ -14,29 +12,31 @@ private fun FileSpec.Builder.nothingToInline() = addAnnotation(
 )
 
 
-fun generateClass(tree: GroupPathTree): Set<FileSpec> {
+fun GroupPathTree.generateClasses(): Set<FileSpec> {
+    val packageName = packageName
+    val root = root
     val rootFile: FileSpec.Builder = FileSpec.builder(packageName, "Dependencies.kt")
 //        .nothingToInline()
 
-    val root = tree.root
     val rootClassName = ClassName(packageName, root.pathComponent.capitalize())
 
-    val rootFileClassBuilder = TypeSpec.classBuilder(rootClassName)
+    val rootClassBuilder = TypeSpec.classBuilder(rootClassName)
         .internalConstructor()
 
-    rootFileClassBuilder.addProperty(prefixProperty(root.pathComponent))
+    rootClassBuilder.addProperty(prefixProperty(root.pathComponent, ""))
 
+    val artifactVertexValueBuilder: (builder: TypeSpec.Builder, value: Group) -> TypeSpec.Builder =
+        { builder, group -> artifactVertexGroupBuilder(builder, group) }
     val childrenFiles = root.children.map {
         it.run {
-
-            rootFileClassBuilder.addProperty(generateProperty())
-            generateChildOfRootFile()
+            rootClassBuilder.addProperty(generateProperty(packageName))
+            generateChildOfRootFile(packageName, artifactVertexValueBuilder)
         }
     }
 
     // TODO: Deal with case where root vertex is ArtifactVertex
 
-    rootFile.addType(rootFileClassBuilder.build())
+    rootFile.addType(rootClassBuilder.build())
     val dependencyHandlerExtension = PropertySpec.builder(root.pathComponent, rootClassName)
         .receiver(DependencyHandler::class)
         .initializer("%T()", rootClassName)
@@ -47,23 +47,29 @@ fun generateClass(tree: GroupPathTree): Set<FileSpec> {
 }
 
 
-internal fun Vertex<Group>.generateChildOfRootFile(): FileSpec {
+internal fun <T> Vertex<T>.generateChildOfRootFile(
+    packageName: String,
+    block: (builder: TypeSpec.Builder, value: T) -> TypeSpec.Builder
+): FileSpec {
     val fileBuilder = FileSpec.builder(packageName, pathComponent.capitalize())
-    val thisClass = generateClass()
+    val thisClass = generateClass(packageName, block)
     fileBuilder.addType(thisClass)
     return fileBuilder.build()
 }
 
-internal fun Vertex<Group>.generateClass(): TypeSpec = when (this) {
-    is Vertex.PathVertex -> pathClass(this)
-    is Vertex.ArtifactVertex -> artifactClass(this)
+internal fun <T> Vertex<T>.generateClass(
+    packageName: String,
+    block: (TypeSpec.Builder, T) -> TypeSpec.Builder
+): TypeSpec = when (this) {
+    is Vertex.PathVertex -> pathClass(this, packageName, block)
+    is Vertex.ArtifactVertex -> pathClass(this, packageName, block)
 }
 
-internal fun artifactClass(artifactVertex: Vertex.ArtifactVertex<Group>): TypeSpec {
-    TODO("not implemented")
-}
-
-internal fun pathClass(vertex: Vertex.PathVertex<Group>): TypeSpec {
+internal fun <T> pathClass(
+    vertex: Vertex<T>,
+    packageName: String,
+    block: (TypeSpec.Builder, T) -> TypeSpec.Builder
+): TypeSpec {
     val className = ClassName(packageName, vertex.pathComponent.capitalize())
 
     val classBuilder = TypeSpec.classBuilder(className)
@@ -75,25 +81,48 @@ internal fun pathClass(vertex: Vertex.PathVertex<Group>): TypeSpec {
 
     vertex.children.forEach {
         it.run {
-            val childClass = generateClass()
+            val childClass = generateClass(packageName, block)
             classBuilder.addType(childClass)
-            classBuilder.addProperty(generateProperty())
+            classBuilder.addProperty(generateProperty(packageName))
         }
     }
 
+    val finalBuilder = when (vertex) {
+        is Vertex.PathVertex -> classBuilder
+        is Vertex.ArtifactVertex -> block(classBuilder, vertex.value)
+    }
 
-    return classBuilder.build()
-
+    return finalBuilder.build()
 }
 
-private fun prefixProperty(pathComponent: String): PropertySpec {
+private fun artifactVertexGroupBuilder(builder: TypeSpec.Builder, group: Group): TypeSpec.Builder {
+    val functions: Collection<FunSpec> =
+        group.artifacts.map { artifact ->
+            FunSpec.builder(artifact.name)
+                .addParameter("version", String::class)
+                .returns(String::class)
+                .addStatement("return %P", dependencySpec(group.groupName, artifact, "${'$'}version"))
+                .build()
+        }
+    builder.addFunctions(functions)
+    return builder
+}
+
+private fun dependencySpec(
+    group: CharSequence,
+    artifact: CharSequence,
+    @Suppress("SameParameterValue") version: CharSequence
+) =
+    "$group:$artifact:$version"
+
+private fun prefixProperty(pathComponent: String, prefix: String = "\$prefix."): PropertySpec {
     return PropertySpec.builder("prefix", String::class)
         .addModifiers(KModifier.PRIVATE)
-        .initializer("%P", "\$prefix.$pathComponent")
+        .initializer("%P", "$prefix$pathComponent")
         .build()
 }
 
-private fun Vertex<Group>.generateProperty(): PropertySpec {
+private fun <T> Vertex<T>.generateProperty(packageName: String): PropertySpec {
     val className = ClassName(packageName, pathComponent.capitalize())
     return PropertySpec.builder(pathComponent, className)
         .initializer("%T(prefix)", className)

@@ -22,7 +22,7 @@ internal class GroupCodegenTest : StringSpec({
             listOf(ArtifactVertex("level1", emptyList(), group))
         ).let { GroupPathTree(it) }
 
-        val generatedCode = generateClass(tree)
+        val generatedCode = tree.generateClasses()
 
         val rootCode = generatedCode.firstOrNull()?.toString() ?: ""
 

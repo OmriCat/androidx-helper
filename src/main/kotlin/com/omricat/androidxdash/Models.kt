@@ -9,9 +9,9 @@ data class GroupName(val name: String) : CharSequence by name
 
 fun GroupName.asPath() = name.replace(oldValue = ".", newValue = "/")
 
-inline class Artifact(val name: String)
+data class Artifact(val name: String) : CharSequence by name
 
-inline class Version(val versionString: String)
+data class Version(val versionString: String) : CharSequence by versionString
 
 class GroupsList private constructor(val groups: Set<GroupName>) {
 
