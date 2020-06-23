@@ -2,6 +2,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.4-M1"
+    application
+}
+
+application {
+    @Suppress("UnstableApiUsage")
+    mainClass.set("com.omricat.androidxdash.MainKt")
 }
 
 group = "com.omricat"
