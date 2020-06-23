@@ -8,7 +8,7 @@ import io.reactivex.rxjava3.core.Single
 
 private val divider = "-".repeat(16)
 
-fun main(args: Array<String>) {
+fun main() {
 
     val service = GoogleMaven.instance()
 
@@ -22,8 +22,11 @@ fun main(args: Array<String>) {
         .onErrorReturn { Err(it) }
         .blockingGet()
 
+
     val androidxTree = groupsResult.flatMap { groups ->
-        val tree = groups.toPathTree("com.omricat.androidxplugin")
+        val tree = groups
+            .sortedBy { it.groupName.name }
+            .toPathTree("com.omricat.androidxplugin")
         val androidxRoot =
             tree.root
                 .asIterableBfs()

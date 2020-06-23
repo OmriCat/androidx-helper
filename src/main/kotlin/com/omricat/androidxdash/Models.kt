@@ -52,7 +52,10 @@ data class Group(val groupName: GroupName, val artifactsToVersions: Map<Artifact
                         Artifact(elt.tagName) to
                                 elt.getAttribute("versions").split(",")
                                     .map(::Version)
-                    }.toMap()
+                    }
+                    .sortedBy { it.first.name }
+                    .toMap()
+
                 Ok(Group(GroupName(doc.documentElement.tagName), artifacts))
             }
 

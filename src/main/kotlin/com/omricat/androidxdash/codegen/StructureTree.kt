@@ -47,6 +47,7 @@ data class GroupHolder(val pathComponent: String, val group: Group)
 
 fun Collection<GroupHolder>.tree(pathComponent: String = ""): Vertex<GroupHolder> {
     val children: List<Vertex<GroupHolder>> = filter { it.pathComponent.isNotBlank() }
+        .sortedBy { it.pathComponent }
         .groupBy(
             { it.pathComponent.substringBefore(".") },
             { it.copy(pathComponent = it.pathComponent.substringAfter(".", "")) })
