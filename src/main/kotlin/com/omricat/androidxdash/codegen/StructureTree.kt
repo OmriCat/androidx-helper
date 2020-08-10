@@ -15,7 +15,7 @@ sealed class Vertex<out T> {
     ) : Vertex<T>()
 }
 
-fun <T> Vertex<T>.asIterableBfs(): Iterable<Vertex<T>> = Iterable {bfsIterator()}
+fun <T> Vertex<T>.asBfsIterable(): Iterable<Vertex<T>> = Iterable { bfsIterator() }
 
 fun <T> Vertex<T>.bfsIterator(): Iterator<Vertex<T>> = object : AbstractIterator<Vertex<T>>() {
 

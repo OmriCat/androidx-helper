@@ -20,7 +20,7 @@ internal class GroupCodegenTest : StringSpec({
         val tree = PathVertex(
             "root",
             listOf(ArtifactVertex("level1", emptyList(), group))
-        ).let { GroupPathTree(it) }
+        ).let { GroupPathTree(it, "") }
 
         val generatedCode = tree.generateClasses()
 
@@ -47,7 +47,7 @@ internal class GroupCodegenTest : StringSpec({
     "simple test of PathVertex generation" {
         val vertex = PathVertex<Group>("root", listOf(PathVertex("level1", emptyList())))
 
-        val generatedCode = pathClass(vertex).toString()
+        val generatedCode = generateClass(vertex, "") { builder, _ -> builder }.toString()
 
         val expectedCode = """|class Root internal constructor(
             |  prefix: kotlin.String

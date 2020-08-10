@@ -7,7 +7,7 @@ import com.omricat.document
 
 data class GroupName(val name: String) : CharSequence by name
 
-fun GroupName.asPath() = name.replace(oldValue = ".", newValue = "/")
+fun GroupName.asPath(): String = name.replace(oldValue = ".", newValue = "/")
 
 data class Artifact(val name: String) : CharSequence by name
 

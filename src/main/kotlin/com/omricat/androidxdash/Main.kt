@@ -1,7 +1,7 @@
 package com.omricat.androidxdash
 
 import com.github.michaelbull.result.*
-import com.omricat.androidxdash.codegen.asIterableBfs
+import com.omricat.androidxdash.codegen.asBfsIterable
 import com.omricat.androidxdash.codegen.generateClasses
 import com.omricat.androidxdash.codegen.toPathTree
 import io.reactivex.rxjava3.core.Single
@@ -29,7 +29,7 @@ fun main() {
             .toPathTree("com.omricat.androidxplugin")
         val androidxRoot =
             tree.root
-                .asIterableBfs()
+                .asBfsIterable()
                 .find { it.pathComponent.startsWith("androidx") }
         androidxRoot.toResultOr { "No androidx groups found" }
             .map { newRoot -> tree.copy(root = newRoot) }
