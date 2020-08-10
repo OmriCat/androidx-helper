@@ -1,6 +1,7 @@
 package com.omricat.androidxdash.codegen
 
 import com.omricat.androidxdash.Group
+import com.omricat.androidxdash.camelCase
 import com.squareup.kotlinpoet.*
 import org.gradle.api.artifacts.dsl.DependencyHandler
 
@@ -15,7 +16,7 @@ private fun FileSpec.Builder.nothingToInline() = addAnnotation(
 fun GroupPathTree.generateClasses(): Set<FileSpec> {
     val packageName = packageName
 
-    val rootFile: FileSpec.Builder = FileSpec.builder(packageName, "Dependencies.kt")
+    val rootFile: FileSpec.Builder = FileSpec.builder(packageName, "Dependencies")
 //        .nothingToInline()
 
     val rootClassName = ClassName(packageName, this.root.pathComponent.capitalize())
@@ -79,7 +80,7 @@ internal fun <T> generateClass(
 private fun artifactVertexGroupBuilder(builder: TypeSpec.Builder, group: Group): TypeSpec.Builder {
     val functions: Collection<FunSpec> =
         group.artifacts.map { artifact ->
-            FunSpec.builder(artifact.name)
+            FunSpec.builder(artifact.name.camelCase())
                 .addParameter("version", String::class)
                 .returns(String::class)
                 .addStatement("return %P", dependencySpec(group.groupName, artifact, "${'$'}version"))
