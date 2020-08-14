@@ -5,8 +5,7 @@ import com.omricat.androidxdash.codegen.asBfsIterable
 import com.omricat.androidxdash.codegen.generateClasses
 import com.omricat.androidxdash.codegen.toPathTree
 import io.reactivex.rxjava3.core.Single
-
-private val divider = "-".repeat(16)
+import java.nio.file.Paths
 
 fun main() {
 
@@ -39,16 +38,13 @@ fun main() {
         runCatching { it.generateClasses() }
     }
 
-    println(
-        when (fileSpecs) {
-            is Err -> "Error: $fileSpecs"
-            is Ok -> fileSpecs.value.map { spec ->
-                """$divider
-                |${spec.name}
-                |$divider
-                |$spec""".trimMargin()
-            }.joinToString("\n")
-            }
-    )
+    fileSpecs.onSuccess {
+        val outDir = Paths.get("").resolve("out").normalize()
+        it.forEach { fileSpec -> fileSpec.writeTo(outDir) }
+    }
+
+    fileSpecs.onFailure {
+        println(it)
+    }
 
 }
