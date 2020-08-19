@@ -65,4 +65,3 @@ data class Group(val groupName: GroupName, val artifactsToVersions: Map<Artifact
 
 }
 
-data class GroupsMap(val map: Map<GroupName, Group>)
