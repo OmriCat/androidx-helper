@@ -1,13 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4-M1"
+    kotlin("jvm") version "1.4.0"
     application
 }
 
 application {
-    @Suppress("UnstableApiUsage")
-    mainClass.set("com.omricat.androidxdash.MainKt")
+    mainClassName = "com.omricat.androidxdash.MainKt"
 }
 
 group = "com.omricat"
@@ -19,7 +18,6 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
 
     implementation(gradleApi())
 
