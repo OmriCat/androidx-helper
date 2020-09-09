@@ -19,32 +19,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 
-class AndroidXCodegenPlugin : Plugin<Project> {
-    override fun apply(project: Project): Unit = with(project) {
-        check(hasKotlinPlugin()) { "Kotlin plugin not found" }
-        val outDir = layout.buildDirectory.get().dir("generated/androidxplugin/kotlin/main").asFile
-        val codegenTask = tasks.register<DefaultTask>("codegen") {
-            doLast {
-                runCodeGen(outDir) }
-        }
-        tasks.withType<KotlinCompile> {
-            dependsOn(codegenTask)
-        }
-        extensions.configure<KotlinProjectExtension> {
-            sourceSets["main"].kotlin.srcDir(outDir)
-        }
-
-    }
-}
-
-private fun runCodeGen(outDir: File) {
-    val fileSpecs = generateFileSpecs().get() ?: throw StopExecutionException()
-    fileSpecs.forEach { fileSpec ->
-        fileSpec.writeTo(outDir)
-    }
-
-}
-
 fun generateFileSpecs(service: GoogleMaven = GoogleMaven.instance()): Result<Set<FileSpec>, Any> {
     val groupsResult = service.groupsIndex()
         .flatMap {
@@ -75,6 +49,3 @@ fun generateFileSpecs(service: GoogleMaven = GoogleMaven.instance()): Result<Set
 
 }
 
-private fun Project.hasKotlinPlugin(): Boolean =
-    plugins.asSequence().mapNotNull { it as? KotlinBasePluginWrapper }
-        .firstOrNull() != null

@@ -3,18 +3,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 //    `kotlin-dsl`
     kotlin("jvm") version "1.4.0"
-    `java-gradle-plugin`
     id("com.adarshr.test-logger") version "2.1.0"
 }
 
-gradlePlugin {
-    plugins {
-        create("androidxDashPlugin") {
-            id = "com.omricat.androidx-dash-plugin"
-            implementationClass = "com.omricat.androidxdash.AndroidXCodegenPlugin"
-        }
-    }
-}
 
 repositories {
     mavenCentral()
