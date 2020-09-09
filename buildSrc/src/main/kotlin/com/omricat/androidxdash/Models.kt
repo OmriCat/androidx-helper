@@ -22,9 +22,9 @@ class GroupsList private constructor(val groups: Set<GroupName>) {
                 if (document.documentElement.tagName == "metadata")
                     Ok(
                         GroupsList(document.documentElement.run {
-                                normalize()
-                                childNodes.asElementList()
-                            }.map { GroupName(it.nodeName) }
+                            normalize()
+                            childNodes.asElementList()
+                        }.map { GroupName(it.nodeName) }
                             .toSet())
                     )
                 else
@@ -38,6 +38,11 @@ class GroupsList private constructor(val groups: Set<GroupName>) {
 }
 
 data class Group(val groupName: GroupName, val artifactsToVersions: Map<Artifact, List<Version>>) {
+
+    constructor(groupName: String, artifactsToVersions: Map<Artifact, List<Version>>) : this(
+        GroupName(groupName),
+        artifactsToVersions
+    )
 
     val artifacts: Set<Artifact> get() = artifactsToVersions.keys
 
