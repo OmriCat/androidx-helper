@@ -3,9 +3,10 @@ import com.omricat.androidxhelperplugin.generateFileSpecs
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm")
+    kotlin("jvm") //version comes from buildSrc
     `java-gradle-plugin`
     id("com.dorongold.task-tree") version "1.5"
+    `maven-publish`
     idea
 }
 
@@ -45,5 +46,13 @@ tasks.withType<KotlinCompile> {
 idea {
     module {
         generatedSourceDirs = generatedSourceDirs + file(generatedDir)
+    }
+}
+
+gradlePlugin {
+    plugins.create("androidxGradleHelperPlugin") {
+        id = "com.omricat.androidx-helper-plugin"
+        displayName = "AndroidX Gradle Helper Plugin"
+        implementationClass = "com.omricat.androidxhelperplugin.NoOpPlugin"
     }
 }
