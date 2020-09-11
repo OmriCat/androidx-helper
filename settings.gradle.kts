@@ -5,5 +5,5 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = "androidx-dash"
+rootProject.name = "androidx-helper-plugin"
 
