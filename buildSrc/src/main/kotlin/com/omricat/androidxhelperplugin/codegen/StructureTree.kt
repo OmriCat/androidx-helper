@@ -1,6 +1,6 @@
-package com.omricat.androidxdash.codegen
+package com.omricat.androidxhelperplugin.codegen
 
-import com.omricat.androidxdash.Group
+import com.omricat.androidxhelperplugin.Group
 import java.util.*
 
 sealed class Vertex<out T> {

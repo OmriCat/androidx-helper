@@ -1,4 +1,4 @@
-package com.omricat.androidxdash
+package com.omricat.androidxhelperplugin
 
 fun CharSequence.camelCase(delimiter: Char = '-'): String {
     val words = split(delimiter)

@@ -1,4 +1,4 @@
-package com.omricat.androidxdash
+package com.omricat.androidxhelperplugin
 
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Result
@@ -9,7 +9,7 @@ import io.reactivex.rxjava3.core.Single
 class IntegrationTest : StringSpec(
   {
     "FileSpecs from androidx real data" should {
-      val fileSpecs = generateFileSpecs(TestService)
+      val fileSpecs = generateFileSpecs("com.omricat.androidxplugin", TestService)
 
       "result in no errors" {
         fileSpecs.shouldBeOk()
@@ -20,7 +20,7 @@ class IntegrationTest : StringSpec(
 
 object TestService : GoogleMaven {
   override fun groupsIndex(): Single<Result<GroupsList, Any>> = Single.just(
-    GroupsList.parseFromString(masterIndex)
+      GroupsList.parseFromString(masterIndex)
   )
 
   override fun group(group: GroupName): Single<Result<Group, Any>> =
@@ -29,7 +29,7 @@ object TestService : GoogleMaven {
         "androidx.test" -> Group.parseFromString(androidxTest)
         "androidx.test.espresso" -> Group.parseFromString(androidxTestEspresso)
         "androidx.test.espresso.idling" -> Group.parseFromString(
-          androidxTestEspressoIdling
+            androidxTestEspressoIdling
         )
         else -> Err("Shouldn't happen")
       }

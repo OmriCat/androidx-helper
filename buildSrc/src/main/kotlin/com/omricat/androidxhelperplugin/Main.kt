@@ -1,25 +1,15 @@
-package com.omricat.androidxdash
+package com.omricat.androidxhelperplugin
 
 import com.github.michaelbull.result.*
-import com.omricat.androidxdash.codegen.asBfsIterable
-import com.omricat.androidxdash.codegen.generateClasses
-import com.omricat.androidxdash.codegen.toPathTree
+import com.omricat.androidxhelperplugin.codegen.asBfsIterable
+import com.omricat.androidxhelperplugin.codegen.generateClasses
+import com.omricat.androidxhelperplugin.codegen.toPathTree
 import com.squareup.kotlinpoet.FileSpec
 import io.reactivex.rxjava3.core.Single
-import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.StopExecutionException
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.register
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.io.File
 
-fun generateFileSpecs(service: GoogleMaven = GoogleMaven.instance()): Result<Set<FileSpec>, Any> {
+fun generateFileSpecs(packageName: String, service: GoogleMaven = GoogleMaven.instance()): Result<Set<FileSpec>, Any> {
     val groupsResult = service.groupsIndex()
         .flatMap {
             when (it) {
@@ -34,7 +24,7 @@ fun generateFileSpecs(service: GoogleMaven = GoogleMaven.instance()): Result<Set
     val androidxTree = groupsResult.flatMap { groups ->
         val tree = groups
             .sortedBy { it.groupName.name }
-            .toPathTree("com.omricat.androidxplugin")
+            .toPathTree(packageName)
         val androidxRoot =
             tree.root
                 .asBfsIterable()
@@ -49,3 +39,8 @@ fun generateFileSpecs(service: GoogleMaven = GoogleMaven.instance()): Result<Set
 
 }
 
+class NoOpPlugin: Plugin<Project> {
+    override fun apply(target: Project) {
+        // This Plugin class only exists to make it possible to apply the plugin in the plugins block
+    }
+}

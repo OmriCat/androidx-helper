@@ -1,7 +1,7 @@
-package com.omricat.androidxdash.codegen
+package com.omricat.androidxhelperplugin.codegen
 
-import com.omricat.androidxdash.Group
-import com.omricat.androidxdash.camelCase
+import com.omricat.androidxhelperplugin.Group
+import com.omricat.androidxhelperplugin.camelCase
 import com.squareup.kotlinpoet.*
 import org.gradle.api.artifacts.dsl.DependencyHandler
 
@@ -76,9 +76,9 @@ fun GroupPathTree.generateClasses(): Set<FileSpec> {
 }
 
 internal fun <T> generateFirstLevelClass(
-  vertex: Vertex<T>,
-  packageName: String,
-  artifactVertexValueBuilder: (TypeSpec.Builder, T) -> TypeSpec.Builder
+    vertex: Vertex<T>,
+    packageName: String,
+    artifactVertexValueBuilder: (TypeSpec.Builder, T) -> TypeSpec.Builder
 ): TypeSpec =
   generateClass(
     ClassName(packageName, vertex.toSimpleClassName()),
@@ -87,9 +87,9 @@ internal fun <T> generateFirstLevelClass(
   )
 
 internal fun <T> generateChildClass(
-  vertex: Vertex<T>,
-  parentClassName: ClassName,
-  artifactVertexValueBuilder: (TypeSpec.Builder, T) -> TypeSpec.Builder
+    vertex: Vertex<T>,
+    parentClassName: ClassName,
+    artifactVertexValueBuilder: (TypeSpec.Builder, T) -> TypeSpec.Builder
 ): TypeSpec = generateClass(
   ClassName(
     parentClassName.packageName,
@@ -98,9 +98,9 @@ internal fun <T> generateChildClass(
 )
 
 internal fun <T> generateClass(
-  className: ClassName,
-  vertex: Vertex<T>,
-  artifactVertexValueBuilder: (TypeSpec.Builder, T) -> TypeSpec.Builder
+    className: ClassName,
+    vertex: Vertex<T>,
+    artifactVertexValueBuilder: (TypeSpec.Builder, T) -> TypeSpec.Builder
 ): TypeSpec {
   val classBuilder =
     TypeSpec.classBuilder(className).internalConstructor()

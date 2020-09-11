@@ -1,7 +1,7 @@
-package com.omricat.androidxdash.codegen
+package com.omricat.androidxhelperplugin.codegen
 
 import com.github.michaelbull.result.get
-import com.omricat.androidxdash.GroupsList
+import com.omricat.androidxhelperplugin.GroupsList
 import io.kotest.core.spec.style.StringSpec
 
 internal class StructureTreeTest : StringSpec({

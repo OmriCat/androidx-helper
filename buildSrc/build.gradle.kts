@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-//    `kotlin-dsl`
     kotlin("jvm") version "1.4.0"
     id("com.adarshr.test-logger") version "2.1.0"
 }
@@ -30,10 +29,8 @@ dependencies {
     implementation(retrofit("adapter-rxjava3"))
     implementation(retrofit("retrofit"))
 
-    fun tinylog(artifact: String) = "org.tinylog:tinylog-$artifact:2.1.2"
-
-    implementation(tinylog("api-kotlin"))
-//    implementation(tinylog("impl"))
+    implementation("io.github.microutils:kotlin-logging:1.8.3")
+    implementation("org.slf4j:slf4j-simple:1.7.30")
 
     implementation("com.squareup:kotlinpoet:1.5.0")
 

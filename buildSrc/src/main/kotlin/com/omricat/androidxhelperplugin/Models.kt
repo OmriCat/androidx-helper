@@ -1,4 +1,4 @@
-package com.omricat.androidxdash
+package com.omricat.androidxhelperplugin
 
 import com.github.michaelbull.result.*
 import com.omricat.asElementList

@@ -1,5 +1,5 @@
 import com.github.michaelbull.result.get
-import com.omricat.androidxdash.generateFileSpecs
+import com.omricat.androidxhelperplugin.generateFileSpecs
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -20,20 +20,20 @@ repositories {
 dependencies {
     implementation(gradleApi())
 }
-val outputDir: File = project.layout.buildDirectory.dir("generated/sources/androidxplugin/kotlin/main").get().asFile
+val generatedDir: File = file("$buildDir/generated/sources/androidxplugin/kotlin/main")
 
 sourceSets {
     main {
-        java.srcDir(outputDir)
+        java.srcDir(generatedDir)
     }
 }
 
 
 val codegenTask: Task by tasks.register("codegen") {
     doLast {
-        val fileSpecs = generateFileSpecs().get() ?: throw GradleException()
+        val fileSpecs = generateFileSpecs("com.omricat.androidxhelperplugin").get() ?: throw GradleException()
         fileSpecs.forEach {
-            it.writeTo(outputDir)
+            it.writeTo(generatedDir)
         }
     }
 }
@@ -44,6 +44,6 @@ tasks.withType<KotlinCompile> {
 
 idea {
     module {
-        generatedSourceDirs = generatedSourceDirs + file(outputDir)
+        generatedSourceDirs = generatedSourceDirs + file(generatedDir)
     }
 }

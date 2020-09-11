@@ -1,8 +1,8 @@
-package com.omricat.androidxdash.codegen
+package com.omricat.androidxhelperplugin.codegen
 
-import com.omricat.androidxdash.Group
-import com.omricat.androidxdash.codegen.Vertex.ArtifactVertex
-import com.omricat.androidxdash.codegen.Vertex.PathVertex
+import com.omricat.androidxhelperplugin.Group
+import com.omricat.androidxhelperplugin.codegen.Vertex.ArtifactVertex
+import com.omricat.androidxhelperplugin.codegen.Vertex.PathVertex
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.should

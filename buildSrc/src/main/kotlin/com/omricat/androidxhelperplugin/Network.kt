@@ -1,14 +1,13 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package com.omricat.androidxdash
+package com.omricat.androidxhelperplugin
 
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.combine
-import com.omricat.androidxdash.converters.ConvertersFactory
+import com.omricat.androidxhelperplugin.converters.ConvertersFactory
 import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.toObservable
-import org.tinylog.kotlin.Logger
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.create
@@ -46,7 +45,7 @@ fun Collection<GroupName>.getDetails(service: GoogleMaven = GoogleMaven.instance
     .flatMap({ groupsBuffer: List<GroupName> ->
                groupsBuffer
                  .toObservable()
-                 .doOnEach { Logger.info { "Requesting $it" } }
+//                 .doOnEach { Logger.info { "Requesting $it" } }
                  .delay(50, TimeUnit.MILLISECONDS)
                  .flatMapSingle({ groupName -> service.group(groupName) }, true)
              }, true)

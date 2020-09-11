@@ -1,6 +1,6 @@
-package com.omricat.androidxdash.converters
+package com.omricat.androidxhelperplugin.converters
 
-import com.omricat.androidxdash.*
+import com.omricat.androidxhelperplugin.*
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize

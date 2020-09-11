@@ -1,4 +1,4 @@
-package com.omricat.androidxdash
+package com.omricat.androidxhelperplugin
 
 object TestData {
     const val androidXUiGroupXml = """<?xml version='1.0' encoding='UTF-8'?>

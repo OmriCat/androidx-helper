@@ -1,10 +1,10 @@
-package com.omricat.androidxdash.converters
+package com.omricat.androidxhelperplugin.converters
 
 import com.github.michaelbull.result.Result
-import com.omricat.androidxdash.Group
-import com.omricat.androidxdash.GroupName
-import com.omricat.androidxdash.GroupsList
-import com.omricat.androidxdash.asPath
+import com.omricat.androidxhelperplugin.Group
+import com.omricat.androidxhelperplugin.GroupName
+import com.omricat.androidxhelperplugin.GroupsList
+import com.omricat.androidxhelperplugin.asPath
 import okhttp3.ResponseBody
 import retrofit2.Converter
 import retrofit2.Retrofit
