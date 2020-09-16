@@ -31,3 +31,6 @@ proguard/
 *.ipr
 *.iws
 
+# buildSrc gradle wrapper files
+buildSrc/gradlew*
+buildSrc/gradle/
