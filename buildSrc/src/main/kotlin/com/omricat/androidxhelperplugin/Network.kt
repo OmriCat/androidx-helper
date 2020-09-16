@@ -2,8 +2,6 @@
 
 package com.omricat.androidxhelperplugin
 
-import com.github.michaelbull.result.Result
-import com.github.michaelbull.result.combine
 import com.omricat.androidxhelperplugin.converters.ConvertersFactory
 import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.Single
@@ -17,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 interface GoogleMaven {
   @GET("master-index.xml")
-  fun groupsIndex(): Single<Result<GroupsList, Any>>
+  fun groupsIndex(): Single<GroupsList>
 
   @GET("{group}/group-index.xml")
   fun group(
@@ -25,7 +23,7 @@ interface GoogleMaven {
       "group",
       encoded = true
     ) group: GroupName
-  ): Single<Result<Group, Any>>
+  ): Single<Group>
 
   companion object {
 
@@ -39,7 +37,7 @@ interface GoogleMaven {
   }
 }
 
-fun Collection<GroupName>.getDetails(service: GoogleMaven = GoogleMaven.instance()): @NonNull Single<Result<List<Group>, Any>> =
+fun Collection<GroupName>.getDetails(service: GoogleMaven = GoogleMaven.instance()): @NonNull Single<List<Group>> =
   toObservable()
     .buffer(5)
     .flatMap({ groupsBuffer: List<GroupName> ->
@@ -50,6 +48,5 @@ fun Collection<GroupName>.getDetails(service: GoogleMaven = GoogleMaven.instance
                  .flatMapSingle({ groupName -> service.group(groupName) }, true)
              }, true)
     .toList()
-    .map { results -> results.combine() }
 
 

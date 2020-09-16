@@ -1,7 +1,6 @@
 package com.omricat.androidxhelperplugin
 
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Result
+import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.should
 import io.reactivex.rxjava3.core.Single
@@ -9,29 +8,34 @@ import io.reactivex.rxjava3.core.Single
 class IntegrationTest : StringSpec(
   {
     "FileSpecs from androidx real data" should {
-      val fileSpecs = generateFileSpecs("com.omricat.androidxplugin", TestService)
+      val fileSpecs =
+        generateFileSpecs("com.omricat.androidxplugin", TestService)
 
       "result in no errors" {
-        fileSpecs.shouldBeOk()
+        val testObserver = fileSpecs.test()
+        assertSoftly {
+          testObserver.assertComplete()
+          testObserver.assertNoErrors()
+        }
       }
     }
   }
 )
 
 object TestService : GoogleMaven {
-  override fun groupsIndex(): Single<Result<GroupsList, Any>> = Single.just(
-      GroupsList.parseFromString(masterIndex)
+  override fun groupsIndex(): Single<GroupsList> = Single.just(
+    GroupsList.parseFromString(masterIndex)
   )
 
-  override fun group(group: GroupName): Single<Result<Group, Any>> =
+  override fun group(group: GroupName): Single<Group> =
     Single.just(
       when (group.name) {
         "androidx.test" -> Group.parseFromString(androidxTest)
         "androidx.test.espresso" -> Group.parseFromString(androidxTestEspresso)
         "androidx.test.espresso.idling" -> Group.parseFromString(
-            androidxTestEspressoIdling
+          androidxTestEspressoIdling
         )
-        else -> Err("Shouldn't happen")
+        else -> throw AssertionError()
       }
     )
 }

@@ -1,6 +1,7 @@
 package com.omricat.androidxhelperplugin.converters
 
 import com.omricat.androidxhelperplugin.*
+import io.kotest.assertions.assertSoftly
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
@@ -14,75 +15,84 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.create
 
-internal class ConvertersFactoryTest : StringSpec({
+internal class ConvertersFactoryTest : StringSpec(
+  {
     fun setup(scheduler: Scheduler? = null): Triple<MockWebServer, GoogleMaven, Retrofit> {
-        val server = MockWebServer()
-        val rxJavaCallAdapterFactory = scheduler
-            ?.let { RxJava3CallAdapterFactory.createWithScheduler(it) }
-            ?: RxJava3CallAdapterFactory.createSynchronous()
-        val retrofit = Retrofit.Builder()
-            .baseUrl(server.url("/"))
-            .addCallAdapterFactory(rxJavaCallAdapterFactory)
-            .addConverterFactory(ConvertersFactory)
-            .build()
-        return Triple(
-            server,
-            retrofit.create(),
-            retrofit
-        )
+      val server = MockWebServer()
+      val rxJavaCallAdapterFactory = scheduler
+        ?.let {
+          RxJava3CallAdapterFactory.createWithScheduler(it)
+        }
+          ?: RxJava3CallAdapterFactory.createSynchronous()
+      val retrofit =
+        Retrofit.Builder()
+          .baseUrl(server.url("/"))
+          .addCallAdapterFactory(rxJavaCallAdapterFactory)
+          .addConverterFactory(ConvertersFactory)
+          .build()
+      return Triple(server, retrofit.create(), retrofit)
     }
 
     "GroupsDocConverter integration test happy path" {
-        val (server, service) = setup()
+      val (server, service) = setup()
 
-        val response = MockResponse().apply {
-            setBody(TestData.groupsXml)
-        }
-        server.enqueue(response)
+      val response = MockResponse().apply {
+        setBody(TestData.groupsXml)
+      }
+      server.enqueue(response)
 
-        val testObserver = service.groupsIndex().test()
+      val testObserver = service.groupsIndex().test()
+      assertSoftly {
         testObserver.assertComplete()
         testObserver.values().shouldHaveSize(1)
 
-        val expectedGroups = listOf(
+        val expectedGroups =
+          listOf(
             "com.android.support.constraint",
             "com.android.databinding",
             "com.android.support"
-        ).map(::GroupName)
+          ).map(::GroupName)
 
-        testObserver.values().first().shouldBeOk {
-            it.groups.shouldHaveSize(3)
-            it.groups.shouldContainExactly(expectedGroups)
-        }
+        val groups = testObserver.values().first().groups
+        groups.shouldHaveSize(3)
+        groups.shouldContainExactly(expectedGroups)
+      }
     }
 
     "GroupConverter integration test" {
-        val (server, service) = setup()
+      val (server, service) = setup()
 
-        val response = MockResponse().apply {
-            setBody(TestData.androidXUiGroupXml)
-        }
+      val response = MockResponse().apply {
+        setBody(TestData.androidXUiGroupXml)
+      }
 
-        server.dispatcher = object : Dispatcher() {
-            override fun dispatch(request: RecordedRequest): MockResponse = when (request.path) {
-                "/androidx/ui/group-index.xml" -> response
-                else -> MockResponse().setResponseCode(404)
-            }
-        }
+      server.dispatcher = object : Dispatcher() {
+        override fun dispatch(request: RecordedRequest): MockResponse =
+          when (request.path) {
+            "/androidx/ui/group-index.xml" -> response
+            else -> MockResponse().setResponseCode(404)
+          }
+      }
 
-        val testObserver = service.group(GroupName("androidx.ui")).test()
+      val testObserver = service
+        .group(GroupName("androidx.ui")).test()
+
+      assertSoftly {
         testObserver.assertComplete()
         testObserver.values().shouldHaveSize(1)
 
-        val expectedGroups = listOf(
-            "0.1.0-dev09", "0.1.0-dev10", "0.1.0-dev11"
-        ).map(::Version)
+        val expectedGroups =
+          listOf(
+            "0.1.0-dev09",
+            "0.1.0-dev10",
+            "0.1.0-dev11"
+          ).map(::Version)
 
-        testObserver.values().first().shouldBeOk {
-            it.groupName.shouldBe(GroupName("androidx.ui"))
-            it.artifacts.shouldHaveSize(24)
-            it.artifactsToVersions[Artifact("ui-text-core")]
-                .shouldContainExactly(expectedGroups)
-        }
+        val group = testObserver.values().first()
+        group.groupName.shouldBe(GroupName("androidx.ui"))
+        group.artifacts.shouldHaveSize(24)
+        group.artifactsToVersions[Artifact("ui-text-core")]
+          .shouldContainExactly(expectedGroups)
+      }
     }
-})
+  })

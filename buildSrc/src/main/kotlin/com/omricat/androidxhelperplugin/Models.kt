@@ -1,8 +1,8 @@
 package com.omricat.androidxhelperplugin
 
-import com.github.michaelbull.result.*
 import com.omricat.asElementList
 import com.omricat.document
+import com.omricat.normalized
 
 
 data class GroupName(val name: String) : CharSequence by name
@@ -15,58 +15,57 @@ data class Version(val versionString: String) : CharSequence by versionString
 
 class GroupsList private constructor(val groups: Set<GroupName>) {
 
-    companion object {
-        fun parseFromString(string: String): Result<GroupsList, ParseError> = document(string)
-            .mapError { ParseError(it.message ?: "Unknown error", string) }
-            .flatMap { document ->
-                if (document.documentElement.tagName == "metadata")
-                    Ok(
-                        GroupsList(document.documentElement.run {
-                            normalize()
-                            childNodes.asElementList()
-                        }.map { GroupName(it.nodeName) }
-                            .toSet())
-                    )
-                else
-                    Err(ParseError("Missing metadata root element", string))
-            }
+  companion object {
+    fun parseFromString(string: String): GroupsList {
+      val documentElement = document(string).documentElement
+      if (documentElement.tagName != "metadata")
+        throw MetadataElementMissingException(string)
+      return GroupsList(
+        documentElement.normalized()
+          .childNodes.asElementList()
+          .map { GroupName(it.nodeName) }
+          .toSet()
+      )
+    }
+  }
+}
 
+data class Group(
+  val groupName: GroupName,
+  val artifactsToVersions: Map<Artifact, List<Version>>
+) {
+
+  constructor(
+    groupName: String,
+    artifactsToVersions: Map<Artifact, List<Version>>
+  ) : this(
+    GroupName(groupName),
+    artifactsToVersions
+  )
+
+  val artifacts: Set<Artifact> get() = artifactsToVersions.keys
+
+  operator fun get(artifact: Artifact): List<Version> =
+    artifactsToVersions[artifact] ?: emptyList()
+
+  companion object {
+    fun parseFromString(string: String): Group {
+      val documentElement = document(string).documentElement
+      val artifacts = documentElement.childNodes.asElementList()
+        .map { elt ->
+          Artifact(elt.tagName) to
+              elt.getAttribute("versions").split(",")
+                .map(::Version)
+        }
+        .sortedBy { it.first.name }
+        .toMap()
+
+      return Group(GroupName(documentElement.tagName), artifacts)
     }
 
-    data class ParseError(val message: String, val input: String)
+  }
 
 }
 
-data class Group(val groupName: GroupName, val artifactsToVersions: Map<Artifact, List<Version>>) {
-
-    constructor(groupName: String, artifactsToVersions: Map<Artifact, List<Version>>) : this(
-        GroupName(groupName),
-        artifactsToVersions
-    )
-
-    val artifacts: Set<Artifact> get() = artifactsToVersions.keys
-
-    operator fun get(artifact: Artifact): List<Version> = artifactsToVersions[artifact] ?: emptyList()
-
-    companion object {
-        fun parseFromString(string: String): Result<Group, ParseError> = document(string)
-            .mapError { ParseError(it.message ?: "Unknown error", string) }
-            .flatMap { doc ->
-                val artifacts = doc.documentElement.childNodes.asElementList()
-                    .map { elt ->
-                        Artifact(elt.tagName) to
-                                elt.getAttribute("versions").split(",")
-                                    .map(::Version)
-                    }
-                    .sortedBy { it.first.name }
-                    .toMap()
-
-                Ok(Group(GroupName(doc.documentElement.tagName), artifacts))
-            }
-
-    }
-
-    data class ParseError(val message: String, val input: String)
-
-}
+data class MetadataElementMissingException(val input: String) : RuntimeException()
 

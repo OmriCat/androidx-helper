@@ -11,41 +11,48 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 
-internal class ModelsTest : StringSpec({
+internal class ModelsTest : StringSpec(
+  {
 
     "Groups#fromString should parse empty list" {
-        GroupsList.parseFromString(TestData.emptyGroupsListXml).shouldBeOk {
-            it.groups.shouldBeEmpty()
-        }
+      GroupsList.parseFromString(TestData.emptyGroupsListXml).groups.shouldBeEmpty()
     }
 
     "Groups#fromString should parse real xml" {
-        GroupsList.parseFromString(TestData.groupsXml).shouldBeOk {
-            it.groups.shouldContainExactly(
-                GroupName("com.android.support.constraint"),
-                GroupName("com.android.databinding"),
-                GroupName("com.android.support")
-            )
-        }
+      GroupsList.parseFromString(TestData.groupsXml).groups.shouldContainExactly(
+        GroupName("com.android.support.constraint"),
+        GroupName("com.android.databinding"),
+        GroupName("com.android.support")
+      )
     }
 
     "Group#fromString should parse real data" {
 
-        Group.parseFromString(TestData.androidXUiGroupXml).shouldBeOk {
-            it.groupName.shouldBe(GroupName("androidx.ui"))
-            it.artifacts.size.shouldBe(24)
-            val expectedUiLivedataVersions = listOf("0.1.0-dev09","0.1.0-dev10","0.1.0-dev11").map(::Version)
-            it[Artifact("ui-livedata")].shouldContainExactly(expectedUiLivedataVersions)
-        }
+      val group = Group.parseFromString(TestData.androidXUiGroupXml)
+      group.groupName.shouldBe(GroupName("androidx.ui"))
+      group.artifacts.size.shouldBe(24)
+      val expectedUiLivedataVersions =
+        listOf(
+          "0.1.0-dev09",
+          "0.1.0-dev10",
+          "0.1.0-dev11"
+        ).map(::Version)
+      group[Artifact("ui-livedata")].shouldContainExactly(
+        expectedUiLivedataVersions
+      )
     }
-})
+  })
 
 fun beOk() = object : Matcher<Result<*, *>> {
-    override fun test(value: Result<*, *>) =
-        MatcherResult(value is Ok<*>, "Result $value should be Ok", "Result $value should be Err")
+  override fun test(value: Result<*, *>) =
+    MatcherResult(
+      value is Ok<*>,
+      "Result $value should be Ok",
+      "Result $value should be Err"
+    )
 }
 
 inline fun <V> Result<V, Any>.shouldBeOk(block: (V) -> Unit = {}) {
-    this should beOk()
-    this.onSuccess(block)
+  this should beOk()
+  this.onSuccess(block)
 }

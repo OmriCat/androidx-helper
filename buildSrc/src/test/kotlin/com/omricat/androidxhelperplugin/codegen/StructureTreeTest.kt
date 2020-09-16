@@ -1,6 +1,5 @@
 package com.omricat.androidxhelperplugin.codegen
 
-import com.github.michaelbull.result.get
 import com.omricat.androidxhelperplugin.GroupsList
 import io.kotest.core.spec.style.StringSpec
 
@@ -10,7 +9,7 @@ internal class StructureTreeTest : StringSpec({
 
         val masterIndex = StructureTreeTest::class.java.getResource("/master-index.xml").readText()
 
-        val groupsList = GroupsList.parseFromString(masterIndex).get()?.groups ?: emptySet()
+        val groupsList = GroupsList.parseFromString(masterIndex).groups
 
 
     }
